@@ -1,98 +1,125 @@
 # Traffic Sign Classification with a Convolutional Neural Network
 
-A machine learning project that uses a **convolutional neural network (CNN)** to classify traffic sign images.
+**Graduate Machine Learning Project - University of Florida, EEL 5840, Summer 2022**
 
-The project demonstrates the development, training, and evaluation of an image-classification model using Python, TensorFlow, Keras, NumPy, and scikit-learn.
-
----
+> **Project provenance:** The original academic implementation was completed in Summer 2022 as part of EEL 5840 - Fundamentals of Machine Learning at the University of Florida. The original notebooks and report are preserved in this repository. Portfolio documentation and reproducibility improvements were added in 2026.
 
 ## Project Overview
 
-The goal of this project was to develop a neural-network model capable of recognizing and classifying traffic signs from image data.
+This team project developed a convolutional neural network (CNN) to classify 300 x 300 color images into ten traffic-sign and traffic-light categories:
 
-The workflow includes:
+1. Stop
+2. Yield
+3. Red Light
+4. Green Light
+5. Roundabout
+6. Right Turn Only
+7. Do Not Enter
+8. Crosswalk
+9. Handicap Parking
+10. No Parking
 
-- Preparing and processing image data
-- Building a convolutional neural network
-- Training the model
-- Evaluating model performance
-- Testing the trained model on traffic sign images
-- Analyzing training and testing results
+The original report credits Justin Gilmore, Ryan Heras, and Paul W. Davis as authors. This repository preserves the project artifacts; it does not claim that all team work was completed by one author.
 
----
+## Engineering and ML Workflow
 
-## Repository Contents
+The preserved implementation covers image/data preparation, stratified train/validation/test partitioning, tensor conversion, pixel normalization, data augmentation, CNN construction, training, validation, checkpointing, evaluation, and classification analysis.
 
-- `Model_Train.ipynb` — Jupyter notebook used to build and train the CNN.
-- `Model_Test.ipynb` — Jupyter notebook used to evaluate and test the trained model.
-- `Final Project - Training Data.ipynb` — Additional notebook containing project training-data work and analysis.
-- `Report.pdf` — Project report documenting the approach and results.
-- `README.md` — Project overview and documentation.
+The training notebook loads the first 5,500 samples from `data_train_vars.npy`. It makes a stratified 85/15 development/test split, then a stratified 80/20 training/validation split of the development portion. The split does not set a random seed. Images are reshaped to 300 x 300 x 3 tensors and normalized by dividing pixel values by 255.
 
----
+## CNN Architecture
 
-## Technologies Used
+`Model_Train.ipynb` defines a TensorFlow/Keras `Sequential` model with:
+
+- Random horizontal/vertical flips and random rotation (`0.2`)
+- Five 3 x 3 `Conv2D` layers with 64, 128, 128, 256, and 256 filters
+- Three `MaxPool2D` layers
+- Dropout after the first convolution (`0.2`) and after each dense layer (`0.1`)
+- Two 80-unit ReLU dense layers with L1/L2 regularization (`0.001` each)
+- A 10-unit softmax output
+- Sparse categorical cross-entropy loss and the Nadam optimizer (learning rate `0.001`)
+- Up to 50 epochs, batch size 100, `EarlyStopping` with patience 30, and best-model checkpointing to `CNN.h5`
+
+These details describe the preserved training notebook. The report also documents the broader model-development experiments, which used some different training settings during iterative tuning.
+
+## Technologies
 
 - Python
-- TensorFlow
-- Keras
+- TensorFlow and Keras
 - NumPy
 - scikit-learn
+- Matplotlib
 - Jupyter Notebook
-- Convolutional Neural Networks
-- Computer Vision
-- Image Classification
+- Git and GitHub
 
----
+## Results
 
-## Machine Learning Workflow
+### Original / Legacy Recorded Results
 
-### 1. Data Preparation
+The preserved `Model_Test.ipynb` records `Model Accuracy: 0.956` for 1,000 samples. The legacy test notebook draws those samples from the same `data_train_vars.npy` source array used during model development; the training notebook uses the first 5,500 source samples. Consequently, these selections can overlap.
 
-Traffic sign image data is prepared for use by the neural network, including the processing required for model training and evaluation.
+The recorded 95.6% value is preserved as an original project result, but it is **not presented as an independent holdout-test accuracy**. The original report separately describes iterative testing results of approximately 96% on preprocessed data and 94% on the original correctly labeled data; these are historical results, not new reproductions.
 
-### 2. Model Development
+### Reproducible Holdout Evaluation
 
-A convolutional neural network is constructed using TensorFlow and Keras.
+A new independent holdout result is intentionally not claimed because the complete original dataset and trained model are not currently distributed with this portfolio repository. The reproducibility work below documents the intended evaluation procedure without fabricating a replacement score.
 
-CNNs are well suited for image-classification problems because they can learn spatial features and visual patterns directly from image data.
+## Repository Structure
 
-### 3. Model Training
+```text
+.
+|-- Final Project - Training Data.ipynb  # Original data-inspection notebook (2022)
+|-- Model_Train.ipynb                    # Original CNN training notebook (2022)
+|-- Model_Test.ipynb                     # Original legacy evaluation notebook (2022)
+|-- Report.pdf                           # Original team project report (2022)
+|-- README.md                            # Portfolio overview (updated 2026)
+|-- requirements.txt                     # Python dependency guidance (added 2026)
+|-- environment.yml                      # Conda environment definition (added 2026)
+|-- .gitignore                           # Local data/model exclusions (added 2026)
+`-- docs/
+    |-- METHODOLOGY.md                    # Traceable implementation notes (added 2026)
+    `-- RESULTS_AND_LIMITATIONS.md        # Result interpretation and rerun criteria (added 2026)
+```
 
-The CNN is trained using the project training dataset while its learning performance is tracked during training.
+## Reproducibility
 
-The training implementation can be found in:
+The repository is **not fully executable as distributed**: it does not include the required NumPy arrays (`data_train.npy`, `labels_train.npy`, `data_train_vars.npy`, and `labels_train_corr_vars.npy`) or trained model (`CNN_overlap.h5`). If authorized copies of those original files are available, place them in the repository root without committing them.
 
-`Model_Train.ipynb`
+Create an environment using either:
 
-### 4. Model Testing
+```bash
+python -m venv .venv
+# Activate the environment, then:
+python -m pip install -r requirements.txt
+jupyter notebook
+```
 
-The trained model is evaluated using separate testing procedures to determine how effectively it classifies traffic sign images.
+or:
 
-The testing implementation can be found in:
+```bash
+conda env create -f environment.yml
+conda activate traffic-sign-cnn
+jupyter notebook
+```
 
-`Model_Test.ipynb`
-
-### 5. Results and Analysis
-
-Training and testing results are analyzed to evaluate model behavior and classification performance.
-
-Additional discussion of the project methodology and results is available in:
-
-`Report.pdf`
-
----
+Open `Final Project - Training Data.ipynb` to inspect the original data, `Model_Train.ipynb` to train, and `Model_Test.ipynb` to reproduce the legacy evaluation only. TensorFlow/Keras 2.7 is documented in the original report, but the exact versions of the other 2022 packages and the original Python version were not recorded here. See [Methodology](docs/METHODOLOGY.md) and [Results and Limitations](docs/RESULTS_AND_LIMITATIONS.md) before attempting a rigorous rerun.
 
 ## Skills Demonstrated
 
-- Python programming
-- Machine learning
-- Deep learning
-- Convolutional neural networks
-- Computer vision
-- Image classification
-- Model training and evaluation
-- Data preprocessing
-- Model testing and validation
-- Technical analysis and documentation
+- Python software development
+- Machine-learning model development
+- CNN architecture design
+- Data preprocessing and augmentation
+- Train/validation/test methodology
+- Model verification and validation
+- Quantitative performance analysis
+- Technical documentation
+- Git-based project organization
+
+## Academic Context
+
+- [EEL 5840 / EEE 4773 Summer C 2022 syllabus](https://github.com/EEL5840-EEE4773-Summer2022/Syllabus)
+- [Official Summer 2022 course organization repositories](https://github.com/orgs/EEL5840-EEE4773-Summer2022/repositories)
+
+These links provide course context only; the organization and its repositories are not presented as Ryan Heras's work.
 
