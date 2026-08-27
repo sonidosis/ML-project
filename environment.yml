@@ -1,0 +1,14 @@
+name: traffic-sign-cnn
+channels:
+  - conda-forge
+dependencies:
+  # TensorFlow 2.7 supports this Python range; the exact 2022 Python version is unknown.
+  - python>=3.7,<3.10
+  - numpy
+  - matplotlib
+  - scikit-learn
+  - jupyter
+  - pip
+  - pip:
+      - "tensorflow>=2.7,<2.8"
+
