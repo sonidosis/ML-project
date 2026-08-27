@@ -1,0 +1,9 @@
+# Reproduction environment for the preserved 2022 notebooks.
+# TensorFlow/Keras 2.7 is documented in Report.pdf. Exact versions of the
+# remaining packages from the original 2022 environment were not recoverable.
+numpy
+matplotlib
+scikit-learn
+tensorflow>=2.7,<2.8
+jupyter
+

@@ -1,0 +1,14 @@
+__pycache__/
+*.py[cod]
+.ipynb_checkpoints/
+.venv/
+venv/
+.env
+.DS_Store
+
+# Original datasets and generated model checkpoints are not distributed here.
+*.h5
+*.keras
+*.npy
+*.npz
+
